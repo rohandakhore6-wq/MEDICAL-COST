@@ -5,14 +5,14 @@ import numpy as np
 
 app = Flask(__name__)
 
-# Safely load the model using an absolute path based on app.py's location
+# Model file safely load karnyasathi absolute path
 basedir = os.path.abspath(os.path.dirname(__file__))
 model_path = os.path.join(basedir, "naive.pkl")
 
 with open(model_path, "rb") as f:
   model = pickle.load(f)
 
-# HTML template with embedded modern CSS layout
+# HTML Template with Responsive CSS Design
 HTML_TEMPLATE = """
 <!DOCTYPE html>
 <html lang="en">
