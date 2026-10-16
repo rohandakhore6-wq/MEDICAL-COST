@@ -1,11 +1,15 @@
+import os
 import pickle
-import numpy as np
 from flask import Flask, render_template_string, request
+import numpy as np
 
 app = Flask(__name__)
 
-# Load the model from naive.pkl
-with open('naive.pkl', 'rb') as f:
+# Safely load the model using an absolute path based on app.py's location
+basedir = os.path.abspath(os.path.dirname(__file__))
+model_path = os.path.join(basedir, "naive.pkl")
+
+with open(model_path, "rb") as f:
   model = pickle.load(f)
 
 # HTML template with embedded modern CSS layout
@@ -160,29 +164,28 @@ HTML_TEMPLATE = """
 """
 
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route("/", methods=["GET", "POST"])
 def home():
-  prediction_text = ''
-  if request.method == 'POST':
+  prediction_text = ""
+  if request.method == "POST":
     try:
-      # Extract inputs mapped to features: age, sex, bmi, children, smoker, region[cite: 1]
-      age = float(request.form['age'])
-      sex = float(request.form['sex'])
-      bmi = float(request.form['bmi'])
-      children = float(request.form['children'])
-      smoker = float(request.form['smoker'])
-      region = float(request.form['region'])
+      age = float(request.form["age"])
+      sex = float(request.form["sex"])
+      bmi = float(request.form["bmi"])
+      children = float(request.form["children"])
+      smoker = float(request.form["smoker"])
+      region = float(request.form["region"])
 
       features = np.array([[age, sex, bmi, children, smoker, region]])
       prediction = model.predict(features)[0]
-      prediction_text = f'Estimated Insurance Cost: ${prediction:,.2f}'
+      prediction_text = f"Estimated Insurance Cost: ${prediction:,.2f}"
     except Exception as e:
-      prediction_text = f'Error in prediction: {str(e)}'
+      prediction_text = f"Error in prediction: {str(e)}"
 
   return render_template_string(
       HTML_TEMPLATE, prediction_text=prediction_text
   )
 
 
-if __name__ == '__main__':
-  app.run(host='0.0.0.0', port=5000)
+if __name__ == "__main__":
+  app.run(host="0.0.0.0", port=5000)
